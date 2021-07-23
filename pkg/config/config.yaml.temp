@@ -1,0 +1,6 @@
+# 开发机配置信息
+dev:
+  host:
+  port: 22
+  user:
+  password:
