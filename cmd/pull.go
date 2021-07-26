@@ -27,6 +27,17 @@ var pull = &cobra.Command{
 
 // 执行下载文件
 func execPull(cmd *cobra.Command, args []string) {
+	// 还得判断命令行参数是否有值，没有的话，直接不绑定关系
+	_ = viper.BindPFlag("ras.hosts", cmd.Flags().Lookup("hosts"))
+	_ = viper.BindPFlag("ras.port", cmd.Flags().Lookup("port"))
+	_ = viper.BindPFlag("ras.user", cmd.Flags().Lookup("user"))
+	_ = viper.BindPFlag("ras.password", cmd.Flags().Lookup("password"))
+
+	// 绑定环境变量
+	_ = viper.BindEnv("ras.hosts", "RAS_HOSTS")
+	_ = viper.BindEnv("ras.user", "RAS_USER")
+	_ = viper.BindEnv("ras.password", "RAS_PASSWORD")
+
 	// 参数校验
 	var port int
 	envPort := os.Getenv("RAS_PORT")
@@ -86,17 +97,6 @@ func init() {
 
 	pull.Flags().StringP("source", "s", "", "Local source files uploaded, separated by comma")
 	pull.Flags().StringP("destination", "d", "", "Remote destination directory")
-
-	// 还得判断命令行参数是否有值，没有的话，直接不绑定关系
-	_ = viper.BindPFlag("ras.hosts", pull.Flags().Lookup("hosts"))
-	_ = viper.BindPFlag("ras.port", pull.Flags().Lookup("port"))
-	_ = viper.BindPFlag("ras.user", pull.Flags().Lookup("user"))
-	_ = viper.BindPFlag("ras.password", pull.Flags().Lookup("password"))
-
-	// 绑定环境变量
-	_ = viper.BindEnv("ras.hosts", "RAS_HOSTS")
-	_ = viper.BindEnv("ras.user", "RAS_USER")
-	_ = viper.BindEnv("ras.password", "RAS_PASSWORD")
 
 	// 必传字段设置
 	_ = pull.MarkFlagRequired("source")

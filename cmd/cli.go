@@ -34,6 +34,18 @@ func checkCliParams(cmd *cobra.Command) bool {
 
 // SSH命令执行
 func execCLI(cmd *cobra.Command, args []string) {
+	// 还得判断命令行参数是否有值，没有的话，直接不绑定关系
+	_ = viper.BindPFlag("ras.hosts", cmd.Flags().Lookup("hosts"))
+	_ = viper.BindPFlag("ras.port", cmd.Flags().Lookup("port"))
+	_ = viper.BindPFlag("ras.user", cmd.Flags().Lookup("user"))
+	_ = viper.BindPFlag("ras.password", cmd.Flags().Lookup("password"))
+	_ = viper.BindPFlag("ras.command", cmd.Flags().Lookup("command"))
+
+	// 绑定环境变量
+	_ = viper.BindEnv("ras.hosts", "RAS_HOSTS")
+	_ = viper.BindEnv("ras.user", "RAS_USER")
+	_ = viper.BindEnv("ras.password", "RAS_PASSWORD")
+
 	// 参数校验
 	var port int
 	envPort := os.Getenv("RAS_PORT")
@@ -89,18 +101,6 @@ func init() {
 	cli.Flags().StringP("user", "u", "", "Specifies the user to log in as on the remote machines, can be replaced by environment variable 'U'")
 	cli.Flags().StringP("password", "p", "", "The password to use when connecting to the remote machines, can be replaced by environment variable 'P'")
 	cli.Flags().StringP("command", "c", "", "The command is executed on the remote machines")
-
-	// 还得判断命令行参数是否有值，没有的话，直接不绑定关系
-	_ = viper.BindPFlag("ras.hosts", cli.Flags().Lookup("hosts"))
-	_ = viper.BindPFlag("ras.port", cli.Flags().Lookup("port"))
-	_ = viper.BindPFlag("ras.user", cli.Flags().Lookup("user"))
-	_ = viper.BindPFlag("ras.password", cli.Flags().Lookup("password"))
-	_ = viper.BindPFlag("ras.command", cli.Flags().Lookup("command"))
-
-	// 绑定环境变量
-	_ = viper.BindEnv("ras.hosts", "RAS_HOSTS")
-	_ = viper.BindEnv("ras.user", "RAS_USER")
-	_ = viper.BindEnv("ras.password", "RAS_PASSWORD")
 
 	// 必传字段设置
 	_ = cli.MarkFlagRequired("command")
