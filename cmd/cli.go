@@ -73,25 +73,27 @@ func execCLI(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	wg.Add(len(hostArray))
 	for _, host := range hostArray {
-		go func() {
-			defer wg.Done()
-
-			ipHost := fmt.Sprintf("%s:%d", host, port)
-			sshClient := controller.SSH{}
-			err := sshClient.Init(ipHost, user, password)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			defer sshClient.Close()
-			err = sshClient.Execute(command)
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Printf("[\033[1;33mOK\033[m][%s]\n\n", ipHost)
-		}()
+		addr := fmt.Sprintf("%s:%d", host, port)
+		go runCliGoroutine(&wg, addr, user, password, command)
 	}
 	wg.Wait()
+}
+
+func runCliGoroutine(wg *sync.WaitGroup, addr, user, password, command string) {
+	defer wg.Done()
+
+	sshClient := controller.SSH{}
+	err := sshClient.Init(addr, user, password)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer sshClient.Close()
+	err = sshClient.Execute(command)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("[\033[1;33mOK\033[m][%s]\n\n", addr)
 }
 
 func init() {

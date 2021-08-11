@@ -66,26 +66,27 @@ func execPull(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	wg.Add(len(hostArray))
 	for _, host := range hostArray {
-		go func() {
-			defer wg.Done()
-
-			ipHost := fmt.Sprintf("%s:%d", host, port)
-
-			sftClient := controller.SFTP{}
-			err := sftClient.Init(ipHost, user, password)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			defer sftClient.Close()
-
-			err = sftClient.Pull(source, destination)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}()
+		addr := fmt.Sprintf("%s:%d", host, port)
+		go runPullGoroutine(&wg, addr, user, password, source, destination)
 	}
 	wg.Wait()
+}
+
+func runPullGoroutine(wg *sync.WaitGroup, addr, user, password, source, destination string) {
+	defer wg.Done()
+
+	sftClient := controller.SFTP{}
+	err := sftClient.Init(addr, user, password)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer sftClient.Close()
+
+	err = sftClient.Pull(source, destination)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func init() {
