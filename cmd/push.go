@@ -68,9 +68,9 @@ func execPush(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	wg.Add(len(hostArray))
 	for _, host := range hostArray {
-		fmt.Println(user, host)
 		go func() {
 			defer wg.Done()
+			fmt.Println(user, host)
 
 			ipHost := fmt.Sprintf("%s:%d", host, port)
 
