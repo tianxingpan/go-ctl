@@ -68,28 +68,49 @@ func execPush(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	wg.Add(len(hostArray))
 	for _, host := range hostArray {
-		go func() {
-			defer wg.Done()
-			fmt.Println(user, host)
-
-			ipHost := fmt.Sprintf("%s:%d", host, port)
-
-			sftClient := controller.SFTP{}
-			err := sftClient.Init(ipHost, user, password)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			defer sftClient.Close()
-
-			err = sftClient.Push(source, destination)
-			if err != nil {
-				fmt.Println(err)
-			}
-			//fmt.Printf("[\033[1;33mOK\033[m][%s]\n\n", ipHost)
-		}()
+		addr := fmt.Sprintf("%s:%d", host, port)
+		go runGoroutine(&wg, addr, user, password, source, destination)
+		//go func() {
+		//	defer wg.Done()
+		//	fmt.Println(user, host)
+		//
+		//	ipHost := fmt.Sprintf("%s:%d", host, port)
+		//
+		//	sftClient := controller.SFTP{}
+		//	err := sftClient.Init(ipHost, user, password)
+		//	if err != nil {
+		//		fmt.Println(err)
+		//		return
+		//	}
+		//	defer sftClient.Close()
+		//
+		//	err = sftClient.Push(source, destination)
+		//	if err != nil {
+		//		fmt.Println(err)
+		//	}
+		//	//fmt.Printf("[\033[1;33mOK\033[m][%s]\n\n", ipHost)
+		//}()
 	}
 	wg.Wait()
+}
+
+func runGoroutine(wg *sync.WaitGroup, addr, user, password, source, destination string) {
+	defer wg.Done()
+	fmt.Println(addr, user)
+
+	sftClient := controller.SFTP{}
+	err := sftClient.Init(addr, user, password)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer sftClient.Close()
+
+	err = sftClient.Push(source, destination)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//fmt.Printf("[\033[1;33mOK\033[m][%s]\n\n", ipHost)
 }
 
 func init() {
