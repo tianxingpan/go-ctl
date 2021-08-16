@@ -20,6 +20,18 @@ func FileExists(file string) bool {
 	return err == nil
 }
 
+// 目录是否存在
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
 // 存在则删除文件
 func RemoveIfExist(filename string) error {
 	if !FileExists(filename) {

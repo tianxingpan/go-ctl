@@ -119,23 +119,23 @@ func (s *SFTP) Push(localPath, remotePath string) error {
 func (s *SFTP) pullFile(localFile, remoteFile string, fInfo os.FileInfo) error {
 	sf, err := s.sftpClient.Open(remoteFile)
 	if err != nil {
-		return fmt.Errorf("")
+		return fmt.Errorf("Open sftp failed, errMsg:%s\n", err.Error())
 	}
 	defer sf.Close()
 
 	lf, err := os.Create(localFile)
 	if err != nil {
-		return fmt.Errorf("")
+		return fmt.Errorf("os.Create error, file:%s, %s\n", localFile, err.Error())
 	}
 	defer lf.Close()
 
 	_, err = sf.WriteTo(lf)
 	if err != nil {
-		return fmt.Errorf("")
+		return fmt.Errorf("remote to local failed, local:%s, remoteIP:%s/%s, errMsg:%s\n", localFile, s.addr, remoteFile, err.Error())
 	}
 	err = lf.Chmod(fInfo.Mode())
 	if err != nil {
-		return fmt.Errorf("")
+		return fmt.Errorf("Chmod %s failed, errMsg:%s\n", localFile, err.Error())
 	}
 
 	return nil
@@ -145,7 +145,7 @@ func (s *SFTP) pullFile(localFile, remoteFile string, fInfo os.FileInfo) error {
 func (s *SFTP) pullDirectory(localPath, remotePath string) error {
 	remoteFiles, err := s.sftpClient.ReadDir(remotePath)
 	if err != nil {
-		return fmt.Errorf("Path error:%s", err.Error())
+		return fmt.Errorf("Path error:%s\n", err.Error())
 	}
 	for _, subDir := range remoteFiles {
 		subLocalPath := path.Join(localPath, subDir.Name())
@@ -199,7 +199,7 @@ func (s *SFTP) pushDirectory(localPath, remotePath string) error {
 	//打开本地文件夹流
 	localFiles, err := ioutil.ReadDir(localPath)
 	if err != nil {
-		return fmt.Errorf("Path error:%s", err.Error())
+		return fmt.Errorf("Path error:%s\n", err.Error())
 	}
 	//先创建最外层文件夹
 	_ = s.sftpClient.Mkdir(remotePath)

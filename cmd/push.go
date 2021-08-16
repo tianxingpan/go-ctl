@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tianxingpan/go-ctl/pkg/controller"
+	"github.com/tianxingpan/go-ctl/pkg/utils"
 	"os"
 	"strconv"
 	"strings"
@@ -63,6 +64,17 @@ func execPush(cmd *cobra.Command, args []string) {
 	password := viper.Get("ras.password").(string)
 	source := viper.Get("ras.source").(string)
 	destination := viper.Get("ras.destination").(string)
+
+	// 检查source是否存在
+	if status, err := utils.PathExists(source); status == false {
+		fmt.Println()
+		if err != nil {
+			fmt.Printf("[\033[0;32;31mERROR\033[m] Source doesn't exist %s error: %s\n", source, err.Error())
+		} else {
+			fmt.Printf("[\033[0;32;31mERROR\033[m] Failed to get source status, %s\n", source)
+		}
+		return
+	}
 
 	hostArray := strings.Split(hosts, ",")
 	var wg sync.WaitGroup
