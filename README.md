@@ -1,5 +1,5 @@
 # go-ctl
-go-ctl是一款SSH的工具客户端辅助工具，支持同时操作多台远程机器执行命令，或者批量上传文件等等，是一款不不错的辅助工具。
+go-ctl是一款SSH的工具客户端辅助工具，支持同时操作多台远程机器执行命令，或者批量上传文件等等，是一款不错的辅助工具。
 
 ## 子命令
 ### cli
@@ -37,7 +37,12 @@ go-ctl是一款SSH的工具客户端辅助工具，支持同时操作多台远�
 ##### password
 目标机器登陆密码，支持短命名*-p* 和长命名 *--password*
 #### 用例
-
+```shell script
+# 可以带上目标机器IP
+./go-ctl push -s=./test.txt -d=/data/test -H=127.0.0.1 -P=36000 -P="test@test"
+# 可以不带目标机器IP，如果没带，则为上一次操作的IP地址
+./go-ctl push -s=./test.txt -d=/data/test
+```
 ### pull
 下载目标机器的文件或者目录，支持多台机器。
 #### 参数说明
@@ -52,6 +57,12 @@ go-ctl是一款SSH的工具客户端辅助工具，支持同时操作多台远�
 ##### password
 目标机器登陆密码，支持短命名*-p* 和长命名 *--password*
 #### 用例
+```shell script
+# 可以带上目标机器IP
+./go-ctl pull -s=/data/test -d=/data/test/test.tx -H=127.0.0.1 -P=36000 -P="test@test"
+# 可以不带目标机器IP，如果没带，则为上一次操作的IP地址
+./go-ctl pull -s=/data/test -d=/data/test/test.tx
+```
 
 ### env
 设置go-ctl配置和环境变量
