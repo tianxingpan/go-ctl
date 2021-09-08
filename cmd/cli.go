@@ -28,10 +28,6 @@ var cli = &cobra.Command{
 	Run:                   execCLI,
 }
 
-func checkCliParams(cmd *cobra.Command) bool {
-	return false
-}
-
 // SSH命令执行
 func execCLI(cmd *cobra.Command, args []string) {
 	// 还得判断命令行参数是否有值，没有的话，直接不绑定关系
